@@ -5,6 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Pixel Forge Studio | Design Architects</title>
     <style>
+
+        /* Scrollbar Horizontal para Móviles */
+#scrollbar-h {
+    position: fixed;
+    bottom: 15px;
+    left: 20vw;
+    width: 60vw;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    z-index: 100;
+    border-radius: 10px;
+    display: none; /* Se activa solo en pantallas pequeñas */
+}
+
+#thumb-h {
+    position: absolute;
+    height: 100%;
+    width: 33.33%; /* Porque tienes 3 columnas */
+    background: var(--accent-color);
+    border-radius: 10px;
+    box-shadow: 0 0 10px var(--accent-color);
+    transition: transform 0.3s ease;
+}
+
+/* Solo mostrar en celulares */
+@media (max-width: 768px) {
+    #scrollbar-h { display: block; }
+}
+        
         :root {
             --bg-color: #0a0a0a;
             --accent-color: #00ffcc; /* Verde azulado / Cian neón */
@@ -178,6 +207,7 @@
     </div>
 
     <div id="scrollbar-v"><div id="thumb-v"></div></div>
+    <div id="scrollbar-h"><div id="thumb-h"></div></div>
 
     <div id="world">
         <div class="cell b1">
@@ -259,10 +289,18 @@
         const musicText = document.getElementById('music-text');
         const bars = document.querySelectorAll('.bar');
 
-        function updateUI() {
-            world.style.transform = `translate(${posX * -100}vw, ${posY * -100}vh)`;
-            thumbV.style.transform = `translateY(${posY * 100}%)`;
-        }
+     function updateUI() {
+    const thumbH = document.getElementById('thumb-h');
+    world.style.transform = `translate(${posX * -100}vw, ${posY * -100}vh)`;
+    
+    // Actualiza barra vertical
+    thumbV.style.transform = `translateY(${posY * 100}%)`;
+    
+    // Actualiza barra horizontal (el nuevo tabulador)
+    if(thumbH) {
+        thumbH.style.transform = `translateX(${posX * 100}%)`;
+    }
+}
 
         function move(dx, dy) {
             if (isMoving) return;
