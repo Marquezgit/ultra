@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pixel Forge Studio | Design Architects</title>
+    <style>
+        :root {
+            --bg-color: #0a0a0a;
+            --accent-color: #00ffcc; /* Verde azulado / Cian neón */
+            --overlay: rgba(0, 0, 0, 0.75); 
+            --transition-speed: 0.85s;
+            --ui-bg: rgba(26, 26, 26, 0.6);
+        }
+
+        body, html {
+            margin: 0; padding: 0;
+            overflow: hidden;
+            background-color: var(--bg-color);
+            font-family: 'Montserrat', sans-serif;
+            color: #fff;
+            width: 100%; height: 100%;
+        }
+
+        /* Sistema de Cuadrícula 3x4 */
+        #world {
+            display: grid;
+            grid-template-columns: repeat(3, 100vw);
+            grid-template-rows: repeat(4, 100vh);
+            width: 300vw;
+            height: 400vh;
+            position: absolute;
+            transition: transform var(--transition-speed) cubic-bezier(0.23, 1, 0.32, 1);
+            will-change: transform;
+        }
+
+        .cell {
+            width: 100vw; height: 100vh;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            padding: 40px; box-sizing: border-box;
+            text-align: center; background-size: cover;
+            background-position: center; position: relative;
+        }
+
+        .cell::before {
+            content: ''; position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--overlay); z-index: 1;
+        }
+
+        .cell > * { position: relative; z-index: 2; }
+
+        /* --- IMÁGENES DE FONDO --- */
+        .b1 { background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1920'); }
+        .b2 { background-image: url('https://images.unsplash.com/photo-1449824913935-59a10b8d2000?q=80&w=1920'); }
+        .b3 { background-image: url('https://images.unsplash.com/photo-1499529112087-3cb3b73cec95?q=80&w=1920'); }
+        .b4 { background-image: url('https://images.unsplash.com/photo-1556742044-3c52d6e88c62?q=80&w=1920'); }
+        .b5 { background-image: url('https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=1920'); }
+        .b6 { background-image: url('https://images.unsplash.com/photo-1517976487492-5750f3195933?q=80&w=1920'); }
+        .b7 { background-image: url('https://images.unsplash.com/photo-1433086966358-54859d0ed716?q=80&w=1920'); }
+        .b8 { background-image: url('https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=1920'); }
+        .b9 { background-image: url('https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?q=80&w=1920'); }
+        .b10 { background-image: url('https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?q=80&w=1920'); }
+        .b11 { background-image: url('https://images.unsplash.com/photo-1514924013411-cbf25faa35bb?q=80&w=1920'); }
+        .b12 { background-image: url('https://images.unsplash.com/photo-1581091215367-9b6c00b3035a?q=80&w=1920'); }
+
+        /* --- LOGO INTEGRADO NEÓN --- */
+        .logo-container {
+            display: flex; flex-direction: column; align-items: center; margin-bottom: 30px;
+        }
+
+        .main-logo {
+            width: 280px; height: auto;
+            /* Filtro avanzado para teñir el logo plateado de verde azulado neón */
+            filter: sepia(1) hue-rotate(130deg) saturate(5) brightness(1.2)
+                    drop-shadow(0 0 15px rgba(0, 255, 204, 0.8));
+            transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            background: transparent;
+            border: none;
+        }
+
+        .main-logo:hover { transform: scale(1.05); }
+
+        h1 {
+            font-size: 3.2rem; letter-spacing: 6px; margin: 15px 0 5px 0; font-weight: 700;
+            background: linear-gradient(to bottom, #fff 0%, var(--accent-color) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 5px rgba(0, 255, 204, 0.5));
+        }
+
+        .tagline {
+            font-size: 1.1rem; letter-spacing: 9px; color: rgba(255, 255, 255, 0.6);
+            text-transform: uppercase; font-weight: 300;
+        }
+
+        h2 { color: var(--accent-color); font-size: 2.2rem; margin-bottom: 20px; text-transform: uppercase; }
+        p { font-size: 1.2rem; max-width: 600px; line-height: 1.6; }
+
+        /* --- CONTROLES DE UI --- */
+        #music-control {
+            position: fixed; top: 30px; right: 30px; z-index: 1000;
+            background: var(--ui-bg); border: 1px solid var(--accent-color);
+            color: var(--accent-color); padding: 10px 18px; border-radius: 50px;
+            cursor: pointer; font-size: 0.7rem; letter-spacing: 2px;
+            text-transform: uppercase; display: flex; align-items: center; gap: 10px;
+            transition: all 0.3s ease; backdrop-filter: blur(5px);
+        }
+
+        #music-control:hover {
+            background: var(--accent-color); color: #000;
+            box-shadow: 0 0 15px var(--accent-color);
+        }
+
+        .equalizer { display: flex; align-items: flex-end; gap: 2px; height: 12px; }
+        .bar { width: 2px; background: currentColor; height: 100%; animation: dance 1s infinite alternate; display: none; }
+        @keyframes dance { from { height: 20%; } to { height: 100%; } }
+
+        #keyboard-controls {
+            position: fixed; bottom: 30px; left: 30px; z-index: 100;
+            display: grid; grid-template-columns: repeat(3, 45px); grid-template-rows: repeat(2, 45px); gap: 10px;
+        }
+
+        .key-btn {
+            background: var(--ui-bg); border: 1px solid rgba(0, 255, 204, 0.2);
+            color: #fff; display: flex; justify-content: center; align-items: center;
+            cursor: pointer; border-radius: 5px; transition: 0.3s; font-size: 1.2rem;
+        }
+
+        .key-btn:hover { background: var(--accent-color); color: #000; }
+        .key-up { grid-column: 2; grid-row: 1; }
+        .key-left { grid-column: 1; grid-row: 2; }
+        .key-down { grid-column: 2; grid-row: 2; }
+        .key-right { grid-column: 3; grid-row: 2; }
+
+        #scrollbar-v {
+            position: fixed; top: 10vh; right: 15px; width: 6px; height: 80vh;
+            background: rgba(255,255,255,0.1); z-index: 100; border-radius: 10px; cursor: pointer;
+        }
+
+        #thumb-v {
+            position: absolute; width: 100%; height: 25%;
+            background: var(--accent-color); border-radius: 10px;
+            box-shadow: 0 0 10px var(--accent-color); transition: transform 0.1s linear;
+        }
+
+        form { display: flex; flex-direction: column; gap: 10px; width: 320px; margin-top: 20px; }
+        input { padding: 12px; background: rgba(0,0,0,0.5); border: 1px solid var(--accent-color); color: #fff; }
+        button { padding: 12px; background: var(--accent-color); border: none; font-weight: bold; cursor: pointer; color: #000; text-transform: uppercase; }
+
+        @media (max-width: 480px) {
+            #keyboard-controls { display: none; }
+            h1 { font-size: 2rem; }
+            .main-logo { width: 180px; }
+        }
+    </style>
+</head>
+<body>
+    
+    <button id="music-control" onclick="toggleMusic()">
+        <span id="music-text">Play Atmosphere</span>
+        <div class="equalizer">
+            <div class="bar" style="animation-delay: 0.1s"></div>
+            <div class="bar" style="animation-delay: 0.3s"></div>
+            <div class="bar" style="animation-delay: 0.2s"></div>
+        </div>
+    </button>
+
+    <audio id="bg-music" loop>
+        <source src="atmosfera.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="keyboard-controls">
+        <div class="key-btn key-up" onclick="move(0, -1)">↑</div>
+        <div class="key-btn key-left" onclick="move(-1, 0)">←</div>
+        <div class="key-btn key-down" onclick="move(0, 1)">↓</div>
+        <div class="key-btn key-right" onclick="move(1, 0)">→</div>
+    </div>
+
+    <div id="scrollbar-v"><div id="thumb-v"></div></div>
+
+    <div id="world">
+        <div class="cell b1">
+            <div class="logo-container">
+                <img src="logo.png" alt="Logo" class="main-logo">
+                <h1>PIXEL FORGE STUDIO</h1>
+                <p class="tagline">Design Architects</p>
+            </div>
+        </div>
+        
+        <div class="cell b2">
+    <h2>Arquitectura Digital de Alto Impacto</h2>
+    <p>No solo creamos sitios web; forjamos experiencias digitales. En Pixel Forge Studio, combinamos estética minimalista con una funcionalidad impecable para que tu marca destaque en un mercado saturado.</p>
+</div>
+
+<div class="cell b3">
+    <h2>Soluciones para Visionarios</h2>
+    <p>Especializados en startups tecnológicas, emprendedores digitales y empresas que buscan dar el salto hacia una identidad visual moderna y disruptiva.</p>
+</div>
+
+<div class="cell b4">
+    <h2>Diseño Enfocado en Resultados</h2>
+    <p>Cada línea de código y cada píxel están diseñados con un propósito: convertir visitantes en clientes leales. Optimizamos el túnel de venta mediante una interfaz intuitiva y veloz.</p>
+</div>
+
+<div class="cell b5">
+    <h2>Artesanía Digital</h2>
+    <p>Fusionamos el desarrollo de software de última generación con el diseño gráfico de vanguardia. Somos un estudio donde la tecnología y el arte se encuentran para crear ecosistemas robustos.</p>
+</div>
+
+<div class="cell b6">
+    <h2>Ingeniería Paso a Paso</h2>
+    <p>Desde el concepto inicial hasta el despliegue final. Aplicamos metodologías ágiles para asegurar que cada proyecto se entregue en tiempo récord sin sacrificar un ápice de calidad.</p>
+</div>
+
+<div class="cell b7">
+    <h2>Evolución Tecnológica</h2>
+    <p>Utilizamos las herramientas más potentes del sector: animaciones fluidas en CSS3, estructuras dinámicas y una adaptabilidad total (Responsive Design) para cualquier dispositivo.</p>
+</div>
+
+<div class="cell b8">
+    <h2>Infraestructura de Vanguardia</h2>
+    <p>Nuestra pila tecnológica nos permite crear sitios ultraligeros y seguros. Implementamos lo último en efectos visuales y sistemas de navegación multidimensional.</p>
+</div>
+
+<div class="cell b9">
+    <h2>Curaduría Visual</h2>
+    <p>Nuestro portafolio refleja un compromiso con la excelencia. Cada proyecto es una pieza única de ingeniería visual adaptada a las necesidades específicas de nuestros clientes.</p>
+</div>
+
+<div class="cell b10">
+    <h2>Redefiniendo el Mañana</h2>
+    <p>Acompañamos a las marcas en su proceso de transformación digital, asegurando que su presencia en la web sea su activo más valioso y potente.</p>
+</div>
+
+<div class="cell b11">
+    <h2>Impacto Medible</h2>
+    <p style="color:var(--accent-color); font-weight:bold;">El 75% de los usuarios juzga la credibilidad de una empresa basándose en su diseño web. No dejes tu reputación al azar; forja tu éxito con nosotros.</p>
+</div>
+
+<div class="cell b12">
+    <h2>Inicia tu Proyecto</h2>
+    <p>¿Listo para llevar tu marca al siguiente nivel? Contáctanos hoy mismo.</p>
+    <p style="font-size: 0.9rem;">WhatsApp Directo: <strong>871 404 2067</strong></p>
+    <form action="https://formspree.io/f/xeerlvvy" method="POST">
+        <input type="text" name="nombre" placeholder="Nombre completo" required>
+        <input type="email" name="email" placeholder="Correo electrónico" required>
+        <textarea name="mensaje" placeholder="Cuéntanos tu idea..." style="padding:12px; background:rgba(0,0,0,0.5); border:1px solid var(--accent-color); color:#fff; font-family:inherit;"></textarea>
+        <button type="submit">Solicitar Presupuesto</button>
+    </form>
+</div>
+
+    <script>
+        let posX = 0, posY = 0;
+        let isMoving = false;
+        const world = document.getElementById('world');
+        const thumbV = document.getElementById('thumb-v');
+        const audio = document.getElementById('bg-music');
+        const musicText = document.getElementById('music-text');
+        const bars = document.querySelectorAll('.bar');
+
+        function updateUI() {
+            world.style.transform = `translate(${posX * -100}vw, ${posY * -100}vh)`;
+            thumbV.style.transform = `translateY(${posY * 100}%)`;
+        }
+
+        function move(dx, dy) {
+            if (isMoving) return;
+            let nX = Math.max(0, Math.min(2, posX + dx));
+            let nY = Math.max(0, Math.min(3, posY + dy));
+            if (nX !== posX || nY !== posY) {
+                posX = nX; posY = nY;
+                updateUI();
+                isMoving = true;
+                setTimeout(() => { isMoving = false; }, 850);
+            }
+        }
+
+        function toggleMusic() {
+            if (audio.paused) {
+                audio.volume = 0;
+                audio.play().then(() => {
+                    // Fade-in suave
+                    let vol = 0;
+                    let fadeIn = setInterval(() => {
+                        if (vol < 0.9) {
+                            vol += 0.1;
+                            audio.volume = vol;
+                        } else {
+                            clearInterval(fadeIn);
+                        }
+                    }, 100);
+                    musicText.innerText = "Audio ON";
+                    bars.forEach(bar => bar.style.display = 'block');
+                }).catch(err => console.log("Error de reproducción:", err));
+            } else {
+                audio.pause();
+                musicText.innerText = "Audio OFF";
+                bars.forEach(bar => bar.style.display = 'none');
+            }
+        }
+
+        window.addEventListener('wheel', e => {
+            if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) move(0, e.deltaY > 0 ? 1 : -1);
+            else move(e.deltaX > 0 ? 1 : -1, 0);
+        }, {passive: true});
+
+        window.addEventListener('keydown', e => {
+            const keys = {ArrowUp:[0,-1], ArrowDown:[0,1], ArrowLeft:[-1,0], ArrowRight:[1,0]};
+            if (keys[e.key]) move(...keys[e.key]);
+        });
+        
+        updateUI();
+    </script>
+</body>
+</html>
